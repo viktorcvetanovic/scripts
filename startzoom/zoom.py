@@ -3,12 +3,41 @@ import os
 import sys
 import time
 import webbrowser
+from abc import abstractmethod, ABC
+
 import pyautogui
+
+
+class Argument(ABC):
+    def __init__(self, flag, value) -> None:
+        super().__init__()
+        self.flag = flag
+        self.value = value
+
+    def __repr__(self) -> str:
+        return "Flag:" + self.flag + " " + "Value: " + self.value
+
+    def __str__(self) -> str:
+        return "Flag:" + self.flag + " " + "Value: " + self.value
+
+    @abstractmethod
+    def handle(self):
+        pass
+
+
+class StartZoom(Argument):
+
+    def handle(self):
+        pass
+
 
 config_file = "config.json"
 # windows...............
 __location__ = os.path.join(sys.path[0], config_file)
 args = sys.argv
+
+mapped_arguments = []
+declared_flags = {}
 
 
 def add_link():
@@ -94,7 +123,7 @@ def create_task():
     action = task_def.Actions.Create(TASK_ACTION_EXEC)
     action.ID = 'zoom'
     action.Path = args[0]
-    action.Arguments = "-s "+args[2]
+    action.Arguments = "-s " + args[2]
 
     # Set parameters
     task_def.RegistrationInfo.Description = 'Task for starting zoom meetings'
@@ -112,6 +141,20 @@ def create_task():
         '',  # No user
         '',  # No password
         TASK_LOGON_NONE)
+
+
+def read_flags():
+    for i in range(len(args)):
+        if isFlag(args[i]):
+            next = i + 1
+            if next < len(args) and not isFlag(args[next]):
+                mapped_arguments.append(Argument(args[i], args[next]))
+            else:
+                mapped_arguments.append(Argument(args[i], ""))
+
+
+def isFlag(string: str):
+    return string.startswith("-")
 
 
 def handle_input():
@@ -133,5 +176,6 @@ def handle_input():
 
 
 data = load_json_config()
-
-handle_input()
+read_flags()
+print(mapped_arguments)
+# handle_input()
