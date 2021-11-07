@@ -3,7 +3,6 @@ import os
 import sys
 import time
 import webbrowser
-
 import pyautogui
 
 config_file = "config.json"
@@ -74,6 +73,47 @@ def print_config():
     return print(data)
 
 
+# windows only
+def create_task():
+    import datetime
+    import win32com.client
+
+    scheduler = win32com.client.Dispatch('Schedule.Service')
+    scheduler.Connect()
+    root_folder = scheduler.GetFolder('\\')
+    task_def = scheduler.NewTask(0)
+
+    # Create trigger
+    start_time = datetime.datetime.now() + datetime.timedelta(minutes=float(args[3]))
+    TASK_TRIGGER_TIME = 1
+    trigger = task_def.Triggers.Create(TASK_TRIGGER_TIME)
+    trigger.StartBoundary = start_time.isoformat()
+
+    # Create action
+    TASK_ACTION_EXEC = 0
+    action = task_def.Actions.Create(TASK_ACTION_EXEC)
+    action.ID = 'zoom'
+    action.Path = args[0]
+    action.Arguments = "-s "+args[2]
+
+    # Set parameters
+    task_def.RegistrationInfo.Description = 'Task for starting zoom meetings'
+    task_def.Settings.Enabled = True
+    task_def.Settings.StopIfGoingOnBatteries = False
+
+    # Register task
+    # If task already exists, it will be updated
+    TASK_CREATE_OR_UPDATE = 6
+    TASK_LOGON_NONE = 0
+    root_folder.RegisterTaskDefinition(
+        'zoom starter',  # Task name
+        task_def,
+        TASK_CREATE_OR_UPDATE,
+        '',  # No user
+        '',  # No password
+        TASK_LOGON_NONE)
+
+
 def handle_input():
     definer = args[1]
     if definer == "-s" or definer == "--start":
@@ -86,6 +126,8 @@ def handle_input():
         print_config()
     elif definer == "-h" or definer == "--help":
         raise ValueError("Not implemented")
+    elif definer == "-c" or definer == "--cron":
+        create_task()
     elif definer == "-sw" or definer == "--startwrite":
         start_and_write()
 
