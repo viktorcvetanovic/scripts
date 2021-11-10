@@ -8,7 +8,7 @@ from abc import abstractmethod, ABC
 import pyautogui
 
 
-class Argument(ABC):
+class Argument:
     def __init__(self, flag, value) -> None:
         super().__init__()
         self.flag = flag
@@ -20,15 +20,27 @@ class Argument(ABC):
     def __str__(self) -> str:
         return "Flag:" + self.flag + " " + "Value: " + self.value
 
+
+class Handler(ABC):
+
+    def __init__(self, argument: Argument) -> None:
+        super().__init__()
+        self.argument = argument
+
     @abstractmethod
     def handle(self):
         pass
 
 
-class StartZoom(Argument):
+class StartZoom(Handler):
 
     def handle(self):
-        pass
+        try:
+            webbrowser.open(data[self.argument.value], new=0, autoraise=True)
+        except Exception:
+            raise ValueError("You have not definied that link !!! " +
+                             "\n Link name: " + self.argument.value +
+                             "\n Check your config.json or use -a function")
 
 
 config_file = "config.json"
@@ -154,7 +166,7 @@ def read_flags():
 
 
 def isFlag(string: str):
-    return string.startswith("-")
+    return string.startswith("-") or string.startswith("--")
 
 
 def handle_input():
