@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import webbrowser
-import pyautogui
+
 import pkg_resources
 
 config_file = pkg_resources.resource_filename("zoom","data/config.json")
@@ -51,7 +51,11 @@ def start_and_write():
     time.sleep(10)
     if os.name == "nt":
         import pygetwindow as gw
-        handle = gw.getWindowsWithTitle('Zoom Meeting')[0]
+        import pyautogui
+        zooms=gw.getWindowsWithTitle('Zoom Meeting')
+        while len(zooms)==0:
+            zooms=gw.getWindowsWithTitle('Zoom Meeting')
+        handle = zooms[0]
         handle.activate()
         handle.maximize()
     pyautogui.hotkey('alt', 'h')
