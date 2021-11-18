@@ -1,7 +1,8 @@
 import zoom
 
 def main():
-   zoom.handle_input()
+   zoom.open_gui()
+   
 
 if __name__ == "__main__":
     main()
