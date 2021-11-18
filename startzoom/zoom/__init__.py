@@ -1,1 +1,2 @@
-from zoom.zoom import handle_input
+from zoom.zoom import *
+from zoom.gui.gui import *

@@ -1,4 +1,5 @@
 import zoom
+
 def main():
    zoom.handle_input()
 

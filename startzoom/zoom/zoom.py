@@ -3,7 +3,6 @@ import os
 import sys
 import time
 import webbrowser
-
 import pkg_resources
 
 config_file = pkg_resources.resource_filename("zoom","data/config.json")
@@ -49,15 +48,14 @@ def start_and_write():
     if args[3] is None:
         raise ValueError("Please enter your name")
     time.sleep(10)
-    if os.name == "nt":
-        import pygetwindow as gw
-        import pyautogui
+    import pygetwindow as gw
+    import pyautogui
+    zooms=gw.getWindowsWithTitle('Zoom Meeting')
+    while len(zooms)<1:
         zooms=gw.getWindowsWithTitle('Zoom Meeting')
-        while len(zooms)==0:
-            zooms=gw.getWindowsWithTitle('Zoom Meeting')
-        handle = zooms[0]
-        handle.activate()
-        handle.maximize()
+    handle = zooms[0]
+    handle.activate()
+    handle.maximize()
     pyautogui.hotkey('alt', 'h')
     for char in args[3]:
         pyautogui.press(char)
@@ -132,12 +130,12 @@ def handle_input():
     elif definer == "-h" or definer == "--help":
         raise ValueError("Not implemented")
     elif definer == "-c" or definer == "--cron":
-        create_task()
+        if os.name == "nt":
+            create_task()
+        else:
+            raise SystemError("This is only support on Windows for now")
     elif definer == "-sw" or definer == "--startwrite":
-        start_and_write()
-
-
-
-
-
-
+        if os.name == "nt":
+            start_and_write()
+        else:
+            raise SystemError("This is only supported on Windows for now")

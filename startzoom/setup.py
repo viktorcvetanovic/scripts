@@ -7,7 +7,7 @@ install_reqs = [str(req.requirement) for req in parse_requirements('requirements
 setup(
     name='zoom',
     version='1.0',
-    packages=["zoom"],
+    packages=["zoom","zoom/gui"],
     package_data={'': ['data/config.json']},
     include_package_data=True,
     url='https://github.com/viktorcvetanovic',
