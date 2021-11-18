@@ -4,18 +4,17 @@ import sys
 import time
 import webbrowser
 import pyautogui
+import pkg_resources
 
-config_file = "config.json"
-# windows...............
-__location__ = os.path.join(sys.path[0], config_file)
+config_file = pkg_resources.resource_filename("zoom","data/config.json")
 args = sys.argv
-
+data=None
 
 def add_link():
     if args[2] is None or args[3] is None:
         raise ValueError("You need to define key and value to add a link")
     data[args[2]] = args[3]
-    with open(__location__, 'w') as f:
+    with open(config_file, 'w') as f:
         json.dump(data, f)
 
 
@@ -23,16 +22,17 @@ def remove_link():
     if args[2] is None:
         raise ValueError("You need to define key and value to add a link")
     del data[args[2]]
-    with open(__location__, 'w') as f:
+    with open(config_file, 'w') as f:
         json.dump(data, f)
 
 
 def load_json_config():
+    global data
     try:
-        with open(__location__, 'r') as f:
-            return json.load(f)
+        with open(config_file, 'r') as f:
+             data=json.load(f)
     except EnvironmentError:
-        raise FileNotFoundError("Please add config.json in this path: " + __location__)
+        raise FileNotFoundError("Please add config.json in this path: " + config_file)
 
 
 def start_zoom():
@@ -115,6 +115,7 @@ def create_task():
 
 
 def handle_input():
+    load_json_config()
     definer = args[1]
     if definer == "-s" or definer == "--start":
         start_zoom()
@@ -132,6 +133,7 @@ def handle_input():
         start_and_write()
 
 
-data = load_json_config()
 
-handle_input()
+
+
+
